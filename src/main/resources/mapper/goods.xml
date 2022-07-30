@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.itcast.dao.GoodsDao">
+
+    <!--定义封装account和user的resultMap-->
+    <resultMap id="goodsTypeMap" type="cn.itcast.domain.Goods">
+        <id property="gid" column="g_id"></id>
+        <result property="gname" column ="g_name"></result>
+        <result property="image" column="g_image"></result>
+        <result property="introduction" column="g_introduction"></result>
+        <result property="price" column="g_price"></result>
+        <result property="gdate" column="g_date"></result>
+        <!--一对一的关系映射 配置封装user的内容-->
+        <association property="type" column="t_id" javaType="cn.itcast.domain.Type">
+            <id property="tid" column="t_id"></id>
+            <result property="tname" column="t_name"></result>
+        </association>
+    </resultMap>
+
+    <!--查询goods所有-->
+    <select id="queryGoodsAll" resultMap="goodsTypeMap" >
+        select * from goods g left join type t on g.g_tid=t.t_id
+        <where>
+            <if test="gname != null and gname !=''"> and g_name like CONCAT('%', #{gname},'%')</if>
+            <if test="starttime != null and starttime !='' ">
+                 and g_date <![CDATA[>=]]> #{starttime}
+            </if>
+            <if test="endtime != null and endtime !='' ">
+                 and g_date <![CDATA[<=]]> #{endtime}
+            </if>
+        </where>
+        limit #{startIndex}, #{pageSize}
+    </select>
+
+    <insert id="addgoods" parameterType="cn.itcast.domain.Goods">
+        insert into goods (g_name,g_image,g_introduction,g_price,g_date,g_tid) values (#{gname},#{image},#{introduction},#{price},#{gdate},#{type.tid});
+    </insert>
+
+    <delete id="deleteGoodsById" parameterType="java.lang.Integer"  >
+        delete from goods where g_id=#{gid};
+    </delete>
+
+
+    <delete id="delelteAll" >
+        delete from goods where g_id in
+        <foreach collection="array" open="(" separator="," close=")" item="gid">
+            #{gid}
+        </foreach>
+    </delete>
+
+    <select id="queryGoodsById" parameterType="java.lang.Integer" resultMap="goodsTypeMap">
+        select * from goods where g_id=#{gid};
+    </select>
+
+    <update id="updateGoods" parameterType="cn.itcast.domain.Goods">
+        update goods set g_name=#{gname},g_image=#{image},g_introduction=#{introduction},g_price=#{price},g_date=#{gdate},g_tid=#{type.tid} where g_id=#{gid};
+    </update>
+
+    <select id="queryGoodsnum" resultType="java.lang.Integer">
+        select count(*) from goods;
+    </select>
+</mapper>

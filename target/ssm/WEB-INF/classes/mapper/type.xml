@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.itcast.dao.TypeDao">
+
+    <resultMap id="typeMap" type="cn.itcast.domain.Type">
+        <id property="tid" column="t_id"></id>
+        <result property="tname" column="t_name"></result>
+    </resultMap>
+    <!--查询goods所有-->
+    <select id="queryTypeAll" resultMap="typeMap">
+        select * from type;
+    </select>
+
+</mapper>
